@@ -146,3 +146,35 @@ action.doubleClick(driver.findElementById("su")).perform();
 >
 > `build().perform()`  的含义是建立行动链，并执行。但是如果查看源码就可以知道，`perform()` 的实现就包括了`build()` 的步骤。
 
+#### 9、单选列表操作
+
+- 案例 HTML 代码
+
+```html
+<select name="fruit" size="1">
+    <option id="peach" value="taozi">桃子</option>
+    <option id="watermelon" value="xigua">西瓜</option>
+    <option id="orange" value="juzi">橘子</option>
+    <option id="kiwifruit" value="mihoutao">猕猴桃</option>
+    <option id="matbush" value="shanzha">山楂</option>
+    <option id="litchi" value="lizhi">荔枝</option>
+</select>
+```
+
+- 案例 Java 代码
+
+```java
+ Select select = new Select(driver.findElement(By.name("fruit")));
+// 判断是否为多选
+select.isMultiple();
+// 获取当前选择的数据
+select.getFirstSelectedOption();
+// 根据序号选择数据
+select.selectByIndex(2);
+// 根据value选择
+select.selectByValue("taozi");
+// 根据显示的文本选择
+select.selectByVisibleText("桃子");
+```
+
+
