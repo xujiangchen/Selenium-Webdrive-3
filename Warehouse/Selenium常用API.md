@@ -25,8 +25,6 @@ public class seleniumDemo {
 }
 ```
 
-
-
 #### 1、访问某网页地址
 
 ```java
@@ -177,4 +175,181 @@ select.selectByValue("taozi");
 select.selectByVisibleText("桃子");
 ```
 
+#### 10、对当前浏览器窗口进行截屏
+
+- `((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE)`
+
+```java
+driver.get("http://www.baidu.com");
+File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+try {
+    //把File对象转换为一个保存在C盘下testing目录中名为test.png的图片文件
+    FileUtils.copyFile(scrFile, new File("d:\\testing\\test.png"));
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+#### 11、执行JavaScript脚本
+
+- 打开百度首页，将百度按钮改为MyLove
+
+```java
+driver.get("http://www.baidu.com");
+WebElement element = driver.findElement(By.id("su"));
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript("document.getElementById('su').setAttribute('value','MyLove');",element);
+```
+
+- 点击百度数据的查询按钮
+
+```java
+driver.get("http://www.baidu.com");
+WebElement element = driver.findElement(By.id("su"));
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript("arguments[0].click",element);
+```
+
+**JavascriptExecutor执行js代码的两种方法**
+
+- Object executeScript(String script, Object... args);
+
+- Object executeAsyncScript(String script, Object... args);
+
+> **script**，javascript代码片段，这段js代码片段是作为js函数的完整方法体，可以使用return语句作为函数的返回值。
+>
+> **args**, 参数数组，参数数组用于将外部数据传递给script(js代码片段)，script中可以通过arguments[index]方式索引args数组中的参数；参数数据类型必须是以下几种（number, boolean, String, WebElement, 或者以上数据类型的List集合），当然无参数可以保留为空。
+>
+> **返回值**，返回值是由js代码片段计算后通过return语句返回，返回值数据类型可以为（WebElement，Double，Long，Boolean，String，List或Map），没有return语句，这里返回数据为null。
+
+#### 12、拖曳页面元素 
+
+```java
+driver.find("https://jqueryui.com/resources/demos/draggable/scroll.html");
+WebElement draggable = driver.findElement(By.id("draggable"));
+Actions action = new Actions(driver);
+// 向下拖动10个元素，拖动5次
+for (int i = 0; i < 5; i++) {
+    action.dragAndDropBy(draggable, 0, 10).perform();
+}
+// 向右拖动10个元素，拖动5次
+for (int i = 0; i < 5; i++) {
+    action.dragAndDropBy(draggable, 10, 0).perform();
+}
+```
+
+#### 13、模拟键盘的操作
+
+- 按下 `action.keyDown`
+- 松开 `action.keyUp`
+
+```java
+driver.get("https://www.baidu.com");  
+Actions action = new Actions(driver);
+driver.findElementById("kw").sendKeys("seleniumm");
+//删除多于的m字母
+action.sendKeys(driver.findElementById("kw"),Keys.BACK_SPACE).perform();
+//ctrl+a
+action.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform();
+//ctrl+c
+action.keyDown(Keys.CONTROL).sendKeys("c").keyUp(Keys.CONTROL).perform();  
+```
+
+#### 14、模拟鼠标右键操作
+
+- `action.contextClick`
+
+```java
+driver.get("https://www.baidu.com");            
+Thread.sleep(5000);
+Actions action = new Actions(driver);
+Thread.sleep(5000);  
+//鼠标在某个元素上右
+action.contextClick(driver.findElementByLinkText("地图")).perform();   
+```
+
+#### 15、在指定元素上方进行鼠标悬浮
+
+- `action.moveToElement`
+
+```java
+driver.navigate().to("http://www.baidu.com");
+Actions action = new Actions(driver);
+//鼠标悬浮在 设置  元素上面
+action.moveToElement(driver.findElementByLinkText("设置")).perform(); 
+```
+
+#### 16、在指定元素上进行鼠标单击左键和释放的操作
+
+```java
+Actions action = new Actions(driver);
+// 单击左键,不进行释放
+action.clickAndHold().perform(div);
+// 释放
+action.release(div).perform();
+```
+
+#### 17、查看页面元素的属性
+
+- `getAttribute`
+
+```java
+driver.navigate().to("http://www.baidu.com");
+driver.findElementById("kw").sendKeys("中国美国");
+System.out.println(driver.findElementById("kw").getAttribute("value"));
+```
+
+#### 18、获取页面元素的CSS属性值
+
+- `getCssValue`
+
+```java
+driver.navigate().to("http://www.baidu.com");
+WebElement element = driver.findElement(By.id("su"));
+String cssColor = element.getCssValue("background-color");
+System.out.println(cssColor);
+```
+
+#### 19、使用Title属性识别和操作新弹出的浏览器窗口
+
+- 获取句柄  `driver.getWindowHandles`
+
+```java
+driver.navigate().to("http://www.baidu.com"); 
+//先将当前浏览器窗口句柄存储到变量中。
+String parentWindowHandle = driver.getWindowHandle(); 
+WebElement element = driver.findElement(By.xpaht("//a[@href=\"http://www.baidu.com/more/\" and text()='更多' and @name=\"tj_briicon\"]"));
+element.click();
+//把打开的所有浏览器句柄，存放到一个set容器中
+Set<String> allWindowsHandles = driver.getWindowHandles();
+if (!allWindowsHandles.isEmpty()){
+    for (String windowHandle : allWindowsHandles){
+        System.out.println(driver.switchTo().window(windowHandle).getTitle());
+        Thread.sleep(10000L);
+    }
+}
+```
+
+> 浏览器句柄: 就是浏览器tab页的一个唯一性标识符，一串数字。可以通过句柄在浏览器的tab页中进行跳转。
+
+#### 20、通过句柄识别和操作新弹出的浏览器窗口
+
+- `driver.switchTo().window()`
+
+```java
+driver.navigate().to("http://www.baidu.com"); 
+//先将当前浏览器窗口句柄存储到变量中。
+String parentWindowHandle = driver.getWindowHandle(); 
+WebElement element = driver.findElement(By.xpaht("//a[@href=\"http://www.baidu.com/more/\" and text()='更多' and @name=\"tj_briicon\"]"));
+element.click();
+
+// 获取当前浏览器的所有句柄
+Set<String> allowWindowsHandle = driver.getWindowHandles();
+// 进入新打开的浏览器
+for (String item : allowWindowsHandle) {
+    if (!parentWindowsHandle.equals(item)) {
+        driver.switchTo().window(item);
+    }
+}	
+```
 
