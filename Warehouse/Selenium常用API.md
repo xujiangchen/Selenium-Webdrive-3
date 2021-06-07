@@ -352,4 +352,60 @@ for (String item : allowWindowsHandle) {
     }
 }	
 ```
+#### 21、操作JavaScript的Alert,Confirm,prompt弹窗
 
+**Alert,Confirm,prompt弹出框，其实并不在当前页面的dom树之中**
+
+- **HTML代码**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input id="button" type="button" onclick="alert('这是一个alert弹出框！')" value="点击"/>
+<input id="button" type="button" onclick="confirm('这是一个confirm弹出框！')" value="点击"/>
+<input id="button" type="button" onclick="prompt('这是一个prompt弹出框！')" value="点击"/>
+</body>
+</html>
+```
+
+- **java代码**
+
+  - **Alert弹窗**
+
+  ```java
+  // 使用 driver.switchTo() 获取alert对象
+  Alert alert = driver.switchTo().alert();
+  // 点击确定
+  alert.accept();
+  ```
+
+  - **confirm弹窗**
+
+  ```java
+  // 使用 driver.switchTo() 获取Confirm
+  Alert alert = driver.switchTo().alert();
+  // 点击确定
+  alert.accept();
+  // 点击取消
+  alert.dismiss();
+  ```
+
+  - **prompt弹窗**
+
+  ```java
+  // 使用 driver.switchTo() 获取prompt
+  Alert alert = driver.switchTo().alert();
+  // 点击确定
+  alert.accept();
+  // 在prompt的弹出框中添加文本信息
+  alert.sendKeys("");
+  // 点击取消
+  alert.dismiss();
+  ```
+
+  
