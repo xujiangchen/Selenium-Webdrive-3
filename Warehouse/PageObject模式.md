@@ -1,11 +1,11 @@
-- [PageObject模式](#pageobject--)
-  * [1、什么是面向对象的思想](#1-----------)
-  * [2、什么事PageObject的思想](#2----pageobject---)
-  * [3、PageObject的简单Demo](#3-pageobject---demo)
-      - [3.1 原始写法](#31-----)
+- [PageObject模式](#pageobject模式)
+  * [1、什么是面向对象的思想](#1什么是面向对象的思想)
+  * [2、什么是PageObject的思想](#2什么是PageObject的思想)
+  * [3、PageObject的简单Demo](#3PageObject的简单Demo)
+      - [3.1 原始写法](#31-原始写法)
       - [3.2 使用Page Objects模式](#32---page-objects--)
-        * [3.2.1 百度首页的pageObject](#321------pageobject)
-        * [3.2.2 测试用例](#322-----)
+        * [3.2.1 百度首页的pageObject](#321-百度首页的pageObject)
+        * [3.2.2 测试用例](#322-测试用例)
 
 ## 1、什么是面向对象的思想
 
@@ -21,7 +21,7 @@
 - 2.把执行者变成指挥者
 - 3.简化功能，把复杂的事情简单化
 
-## 2、什么事PageObject的思想
+## 2、什么是PageObject的思想
 
 在前端自动化测试过程中我们经常要进行查找元素，操作元素的操作，一般来说，代码是如下这个样子的：
 
