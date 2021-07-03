@@ -1,0 +1,4 @@
+# 基础信息
+base:
+  url: http://www.baidu.com
+  browser: FF
