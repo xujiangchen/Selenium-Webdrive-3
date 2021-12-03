@@ -10,10 +10,14 @@
     - [2.3.3 自定义显示等待方式](#233-自定义显示等待方式)
 - [3、web控件的定位和常见操作](#3web控件的定位和常见操作)
   - [3.1 定位方式](#31-定位方式)
-  - [3.2 基本交换](#32-基本交换)
+  - [3.2 基本交互](#32-基本交互)
     - [3.2.1 Action](#321-action)
       - [3.2.1.1 ActionChains](#3211-actionchains)
       - [3.2.1.1 TouchAction](#3211-touchaction)
+    - [3.2.2 多窗口处理](#322-多窗口处理)
+    - [3.2.3 frame](#323-frame)
+    - [3.2.4  执行javascript脚本](#324--执行javascript脚本)
+- [4、多浏览器处理](#4多浏览器处理)
 
 
 ## 1、driver下相关
@@ -168,7 +172,7 @@ class TestWait:
 - [xpath定位](https://github.com/xujiangchen/Test-Notes/blob/main/Web-Auto-Test/%E5%85%83%E7%B4%A0%E5%AE%9A%E4%BD%8D/xpath%E5%AE%9A%E4%BD%8D%E6%96%B9%E5%BC%8F.md)
 - [css定位](https://github.com/xujiangchen/Test-Notes/blob/main/Web-Auto-Test/%E5%85%83%E7%B4%A0%E5%AE%9A%E4%BD%8D/css%E5%AE%9A%E4%BD%8D.md)
 
-### 3.2 基本交换
+### 3.2 基本交互
 
 #### 3.2.1 Action
 - `ActionChains`: 执行PC端的鼠标事件，比如单击、双击、点击鼠标右键、拖拽等等。
@@ -261,3 +265,56 @@ scroll_from_element(on_element xoffset yoffset)
 #以元素为起点以一定速度向下滑动
 flick_element(on_element, xoffset, yoffset, speed)
 ```
+
+#### 3.2.2 多窗口处理
+
+在测试过程中有时候会遇到出现多个浏览器窗口的情况，这时候我们可以通过窗口的句柄来操作不同窗口的元素
+
+句柄：可以理解为tab页的id
+
+- 获取当前tab页面的句柄：`self.driver.current_window_handle`
+- 获取当前浏览器的所有句柄：`self.driver.window_handles`
+- 进行tab页面的跳转：`self.driver.switch_to.window()`
+
+```python
+class TestDemo:
+
+    def setup(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.driver.get("http://www.baidu.com")
+        self.driver.implicitly_wait(2)
+
+    def teardown(self):
+        time.sleep(5)
+        self.driver.quit()
+
+    def test_one(self):
+        
+        self.driver.find_element_by_link_text("登录").click()
+        self.driver.find_element_by_link_text("立即注册").click()
+
+        parent_handle = self.driver.current_window_handle
+        all_handles = self.driver.window_handles
+
+        for item in all_handles:
+            if item != parent_handle:
+                self.driver.switch_to.window(item)
+
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'TANGRAM__PSP_4__userName')))
+
+        self.driver.find_element_by_id("TANGRAM__PSP_4__userName").send_keys("21312323")
+```
+
+#### 3.2.3 frame
+
+ frame标签有frameset、frame、iframe三种，frameset跟其他普通标签没有区别，不会影响到正常的定位，而frame与iframe会影响selenium定位
+
+ - 切入frame：`self.driver.switch_to.frame(reference) #通过id和index切换到frame`
+ - 切出frame（切回主目录）：`self.driver.switch_to.default_content() ` 
+ - 嵌套frame,从子frame切回到父frame：`self.driver.switch_to.parent_frame()`
+
+#### 3.2.4  执行javascript脚本
+
+
+## 4、多浏览器处理
