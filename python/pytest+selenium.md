@@ -16,8 +16,11 @@
       - [3.2.1.1 TouchAction](#3211-touchaction)
     - [3.2.2 多窗口处理](#322-多窗口处理)
     - [3.2.3 frame](#323-frame)
-    - [3.2.4  执行javascript脚本](#324--执行javascript脚本)
-- [4、多浏览器处理](#4多浏览器处理)
+    - [3.2.4 执行javascript脚本](#324-执行javascript脚本)
+    - [3.2.5 文件上传,弹框处理](#325-文件上传弹框处理)
+- [4、Page Object](#4page-object)
+  - [4.1 基本原则](#41-基本原则)
+  - [4.2 实在demo](#42-实在demo)
 
 
 ## 1、driver下相关
@@ -314,7 +317,56 @@ class TestDemo:
  - 切出frame（切回主目录）：`self.driver.switch_to.default_content() ` 
  - 嵌套frame,从子frame切回到父frame：`self.driver.switch_to.parent_frame()`
 
-#### 3.2.4  执行javascript脚本
+#### 3.2.4 执行javascript脚本
+`self.driver.execute_script()`
 
+**不带参数：**
+```python
+def test_baidu(self):
+    self.driver.get("http://www.baidu.com")
+    self.driver.execute_script('document.getElementById("kw").value = "test"')
+    self.driver.execute_script('document.getElementById("su").click()')
+```
 
-## 4、多浏览器处理
+**带参数：**
+```python
+username = driver.find_element_by_xpath("//*[@id='username']")
+password = driver.find_element_by_xpath("//*[@id='password']")
+driver.execute_script("arguments[0].value = 'admin';arguments[1].value = 'admin';", username, password)
+```
+
+#### 3.2.5 文件上传,弹框处理
+
+**文件上传**
+```python
+# 如果是input标签
+el = driver.find_element_by_id("上传按钮")
+el.send_keys("文件路径+文件名称")
+```
+**弹框处理**
+弹出框有三种，分别是：alert，confirm，prompt
+
+弹出框的主要操作方法：
+- ext：获取文本值
+- accept() ：点击"确认"
+- dismiss() ：点击"取消"或者关闭弹出框
+- send_keys() ：输入文本值
+- driver.switch_to.alert()：切换到弹框之中
+
+## 4、Page Object
+
+### 4.1 基本原则
+- 1.The public methods represent the services that the page offers
+  公共方法来代替页面提供的服务
+- 2、Try not to expose the internals of the page
+   尽量不要暴露页面的内部结构
+- 3、Generally dont't make assertions
+   一般不做断言
+- 4、Methods return other PageObjects
+   方法返回其他PageObject
+- 5、Need not represent an entire page
+   不需要代表整个页面，只需要封装重要的页面元素
+- 6、Different results for the same action are modeled as different methods
+   同一动作的不同结果被建模为不同的方法
+
+### 4.2 实在demo
