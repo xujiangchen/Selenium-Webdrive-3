@@ -20,7 +20,10 @@
     - [3.2.5 文件上传,弹框处理](#325-文件上传弹框处理)
 - [4、Page Object](#4page-object)
   - [4.1 基本原则](#41-基本原则)
-  - [4.2 实在demo](#42-实在demo)
+  - [4.2 demo（百度首页）](#42-demo百度首页)
+    - [4.2.1 BasePage](#421-basepage)
+    - [4.2.2 Main](#422-main)
+    - [4.2.3 Register](#423-register)
 
 
 ## 1、driver下相关
@@ -369,4 +372,92 @@ el.send_keys("文件路径+文件名称")
 - 6、Different results for the same action are modeled as different methods
    同一动作的不同结果被建模为不同的方法
 
-### 4.2 实在demo
+### 4.2 demo（百度首页）
+
+#### 4.2.1 BasePage
+
+所有的页面都继承与它，让它共享WebDriver，并对相关参数进行初始化，对相关共同方法进行封装
+```python
+from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver
+
+
+
+class BasePage:
+
+    _base_url = ""
+
+    def __init__(self, driver: WebDriver = None):
+      """
+      初始化方法
+      """
+        self._driver = None
+        # 复用driver，防止重复创建
+        if driver is None:
+            self._driver = webdriver.Chrome()
+        else:
+            self._driver = driver
+        # 进入指定页面
+        if self._base_url != "":
+            self._driver.get(self._base_url)
+        self._driver.maximize_window()
+        self._driver.implicitly_wait(2)
+
+    def find(self, by, local):
+      """
+      封装查询element方法
+      """
+        return self._driver.find_element(by, local)
+
+    def quiet_win(self):
+      """
+      封装关闭页面方法
+      """
+        self._driver.quit()
+```
+
+#### 4.2.2 Main
+```python
+from selenium.webdriver.common.by import By
+
+from chapter5.page.BasePage import BasePage
+from chapter5.page.Register import Register
+
+
+class Main(BasePage):
+
+    _base_url = "http://www.baidu.com"
+
+    def goto_register(self):
+        self.find(By.LINK_TEXT, "立即注册").click()
+        all_handles = self._driver.window_handles
+        now_handle = self._driver.current_window_handle
+        for item in all_handles:
+            if item != now_handle:
+                self._driver.switch_to.window(item)
+        return Register(self._driver)
+
+    def goto_login(self):
+        self.find(By.LINK_TEXT, "登录").click()
+```
+
+#### 4.2.3 Register
+```python
+import time
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from chapter5.page.BasePage import BasePage
+
+
+class Register(BasePage):
+
+    def insert_base(self):
+        WebDriverWait(self._driver, 4).until(EC.presence_of_element_located((By.ID, 'TANGRAM__PSP_4__userName')))
+        self.find(By.ID, "TANGRAM__PSP_4__userName").send_keys("HELLO")
+        self.find(By.ID, "TANGRAM__PSP_4__phone").send_keys("WORLD")
+        time.sleep(10)
+        return True
+```
