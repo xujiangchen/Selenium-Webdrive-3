@@ -1,17 +1,17 @@
-- [WebDriver的高级应用实例](#webdriver-------)
-    + [1、使用JavaScriptExecutor单击元素](#1---javascriptexecutor----)
-    + [2、在使用Ajax方式产生的浮动框中，单击选择包含某个关键字的选项](#2----ajax------------------------)
-    + [3、设置一个页面对象的属性值](#3-------------)
-    + [4、在日期选择器上进行日期选择](#4--------------)
-    + [5、无人化自动下载某个文件](#5------------)
-    + [6、附件上传](#6-----)
-    + [7、Web页面滚动条](#7-web-----)
-    + [8、Robot操作键盘](#8-robot----)
-    + [9、操作富文本框的两种方法](#9------------)
-    + [10 、精确比对网页截图图片](#10------------)
-    + [11、控制基于HTML5语言实现的视频播放器](#11-----html5----------)
-    + [12、在HTML5的画布元素上进行绘画操作](#12--html5------------)
-    + [13、操作HTML5的存储对象](#13---html5-----)
+- [1、使用JavaScriptExecutor单击元素](#1使用javascriptexecutor单击元素)
+- [2、在使用Ajax方式产生的浮动框中，单击选择包含某个关键字的选项](#2在使用ajax方式产生的浮动框中单击选择包含某个关键字的选项)
+- [3、设置一个页面对象的属性值](#3设置一个页面对象的属性值)
+- [4、在日期选择器上进行日期选择](#4在日期选择器上进行日期选择)
+- [5、无人化自动下载某个文件](#5无人化自动下载某个文件)
+- [6、附件上传](#6附件上传)
+- [7、Web页面滚动条](#7web页面滚动条)
+- [8、Robot操作键盘](#8robot操作键盘)
+- [9、操作富文本框的两种方法](#9操作富文本框的两种方法)
+- [10 、精确比对网页截图图片](#10-精确比对网页截图图片)
+- [11、控制基于HTML5语言实现的视频播放器](#11控制基于html5语言实现的视频播放器)
+- [12、在HTML5的画布元素上进行绘画操作](#12在html5的画布元素上进行绘画操作)
+- [13、操作HTML5的存储对象](#13操作html5的存储对象)
+- [14、操作chrome开发者工具](#14操作chrome开发者工具)
 
 #### 1、使用JavaScriptExecutor单击元素
 
@@ -582,3 +582,29 @@ public void testHtml5sessionStorage() {
 }
 ```
 
+#### 14、操作chrome开发者工具
+
+在最新 java版本的 Selenium 4.x 版本中，新增了对开发者工具的操作，这个要求chrome的版本要高于86版本！！！
+
+```java
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--user-data-dir=" + System.getevn("USERPROFILE") + "/AppData/Local/Google/Chrome/User Data/Default")
+// chrome浏览器的exe文件的绝对路径
+options.setBinary("chrome.exe")
+
+DevTool devTool = driver.getDevTools();
+devTool.createSession();
+devTool.send(Network.enable(of(1000000000), of(1000000000), Optional.empty()));
+
+// 添加监听
+devTool.addListener(Network.responseRecevied(), responseReceived->{
+    RequestId requestId = responseReceived.getRequestId();
+    String url = responseReceived.getResponse().getUrl();
+    String mimeType = responseReceived.getResponse().getMimeType();
+
+    Thread.sleep(3000L)
+    String reponseBody = devTool.send(Network.getResponseBody(requestId)).getBody();
+});
+
+```
